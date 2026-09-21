@@ -19,8 +19,8 @@
     }">
         <div class="grid grid-cols-3 gap-4">
             @foreach ($products as $product)
-                <div class="border rounded-md p-3 cursor-pointer hover:bg-slate-50"
-                    @click="addToCart({{ $product->id }}, '{{ $product->name }}', {{ $product->price }})">
+                <div class="product-card border rounded-md p-3 cursor-pointer hover:bg-slate-50 transition"
+                @click="addToCart({{ $product->id }}, '{{ $product->name }}', {{ $product->price }})">
                     <p class="font-medium">{{ $product->name }}</p>
                     <p class="text-sm text-slate-500">Rp {{ number_format($product->price) }}</p>
                     @if ($product->stock < 10)
@@ -48,4 +48,6 @@
             </p>
         </div>
     </div>
+
+    @vite('resources/js/pos.js')
 @endsection
