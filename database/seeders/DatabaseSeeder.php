@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
                     'stock' => fake()->numberBetween(0, 200),
                     'created_at' => now(),
                     'updated_at' => now(),
+                    'is_active' => fake()->boolean(90),
                 ];
             }
         }
