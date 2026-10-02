@@ -13,4 +13,9 @@
        'bg-slate-800 text-white font-semibold' : 'text-slate-400 hover:text-white hover:bg-slate-800/60' }}">
         Transaksi
     </a>
+
+    <a href="{{ route('products.index') }}" 
+        class="flex items-center px-4 transition text-slate-400 hover:text-white hover:bg-slate-800/60 hover:underline">
+            Produk
+    </a>
 </nav>
