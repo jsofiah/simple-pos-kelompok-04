@@ -27,9 +27,13 @@
                         <span class="inline-block mt-1 text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded">
                             Stok Menipis
                         </span>
-                        @endif
+                    @endif
                 </div>
             @endforeach
+        </div>
+
+        <div class="mt-4">
+            {{ $products->links() }}
         </div>
 
         <div class="mt-4 border-t pt-3">
