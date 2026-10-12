@@ -12,6 +12,13 @@
         <p class="text-sm text-slate-500 mt-1">
             Kasir: {{ $transaction->user->name }}
         </p>
+        Transaksi #{{ $transaction->id }}
+        &middot; {{ $transaction->created_at->format('d M Y H:i') }}
+        &middot; Rp {{ number_format($transaction->total) }}
+    </p>
+    <p class="text-sm mt-1">
+        Jumlah Item: {{ $transaction->details->sum('qty') }}
+    </p>
     <ul class="text-sm text-slate-500 mt-1">
     @foreach ($transaction->details as $detail)
         <li>{{ $detail->product->name }} &times; {{ $detail->qty }} = Rp {{
