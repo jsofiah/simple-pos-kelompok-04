@@ -5,6 +5,13 @@
     @foreach ($transactions as $transaction)
     <div class="border rounded-md p-3 mb-3">
         <p class="font-medium">
+            Transaksi #{{ $transaction->id }} &middot;
+            {{ $transaction->created_at->format('d M Y H:i') }} &middot;
+            Rp {{ number_format($transaction->total) }}
+        </p>
+        <p class="text-sm text-slate-500 mt-1">
+            Kasir: {{ $transaction->user->name }}
+        </p>
         Transaksi #{{ $transaction->id }}
         &middot; {{ $transaction->created_at->format('d M Y H:i') }}
         &middot; Rp {{ number_format($transaction->total) }}
