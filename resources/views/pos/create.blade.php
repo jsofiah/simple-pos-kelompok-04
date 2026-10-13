@@ -1,8 +1,5 @@
-
 @extends('layouts.app')
-
 @section('title', 'Kasir')
-
 @section('content')
     <h1 class="text-lg font-semibold mb-4">Transaksi Kasir</h1>
 
@@ -17,6 +14,14 @@
             {{ $message }}
         </div>
     @enderror
+
+    @foreach ($errors->get('items.*.qty') as $messages)
+        @foreach ($messages as $message)
+            <div class="mb-4 rounded-md bg-red-100 p-3 text-red-700">
+                {{ $message }}
+            </div>
+        @endforeach
+    @endforeach
 
     <div x-data="{
         cart: [],
