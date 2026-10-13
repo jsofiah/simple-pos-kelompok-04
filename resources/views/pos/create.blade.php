@@ -22,12 +22,17 @@
         cart: [],
 
         addToCart(id, name, price) {
-            this.cart.push({
-                product_id: id,
-                name: name,
-                price: Number(price),
-                qty: 1
-            });
+            let existing = this.cart.find(item => item.product_id === id);
+            if (existing) {
+                existing.qty++;
+            } else {
+                this.cart.push({
+                    product_id: id,
+                    name: name,
+                    price: Number(price),
+                    qty: 1
+                });
+            }
         },
 
         removeFromCart(index) {
