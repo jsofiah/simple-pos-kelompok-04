@@ -57,3 +57,7 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+Tantangan 5, Menjelaskan validasi numeric pada field total:
+Validasi numeric di field total masih belum cukup karena itu hanya melakukan pengecekan di sisi client, di server kita harus cek lagi apakah benar produk yang dibeli dengan harganya jika dikalikan akan menghasilkan total yang sesuai, sehingga kita tidak mendapat kerugian jika data yang dikirim dari client ke server sudah dimodifikasi
