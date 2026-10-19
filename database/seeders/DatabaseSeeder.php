@@ -9,11 +9,9 @@ use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
+        $this->call(DemoUserSeeder::class);
         $user = User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
@@ -31,7 +29,6 @@ class DatabaseSeeder extends Seeder
                     'stock' => fake()->numberBetween(0, 200),
                     'created_at' => now(),
                     'updated_at' => now(),
-                    'is_active' => fake()->boolean(90),
                 ];
             }
         }
@@ -40,7 +37,6 @@ class DatabaseSeeder extends Seeder
         }
         $productPrices = DB::table('products')->pluck('price', 'id');
         $productIds = $productPrices->keys()->all();
-
         for ($t = 0; $t < 2500; $t++) {
             DB::transaction(function () use ($user, $productIds, $productPrices) {
                 $itemCount = fake()->numberBetween(1, 4);
