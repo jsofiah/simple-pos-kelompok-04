@@ -25,8 +25,7 @@
                 <label class="block text-sm font-medium mb-1">Kata Sandi</label>
                 <input type="password" name="password" required class="w-full border rounded-md px-3 py-2 text-sm">
             </div>
-            <button type="submit" class="w-full bg-slate-900 text-white rounded-md py-2
-↪ text-sm">Masuk</button>
+            <button type="submit" class="w-full bg-slate-900 text-white rounded-md py-2 text-sm">Masuk</button>
         </form>
         <p class="mt-6 text-xs text-slate-500">
             Akun demo: admin@pos.test atau kasir@pos.test, kata sandi<code>password</code>.
