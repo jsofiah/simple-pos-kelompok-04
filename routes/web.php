@@ -11,6 +11,10 @@ Route::get('/', function () {
 });
 
 Route::middleware('guest')->group(function () {
+    Route::get('/about', function () {
+        return view('about');
+    })->name('about');
+    
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);
 });
