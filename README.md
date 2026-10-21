@@ -61,3 +61,35 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 Tantangan 5, Menjelaskan validasi numeric pada field total:
 Validasi numeric di field total masih belum cukup karena itu hanya melakukan pengecekan di sisi client, di server kita harus cek lagi apakah benar produk yang dibeli dengan harganya jika dikalikan akan menghasilkan total yang sesuai, sehingga kita tidak mendapat kerugian jika data yang dikirim dari client ke server sudah dimodifikasi
+
+## Skenario Uji Manual
+
+Persiapan: jalankan `php artisan migrate:fresh --seed`, lalu `php artisan serve`
+(dan `npm run dev` di terminal kedua).
+
+### Peran: Admin (admin@pos.test / password)
+
+| No | Langkah | Hasil yang diharapkan |
+|----|---------|-----------------------|
+| 1 | Buka `/login`, masuk sebagai admin@pos.test | Berhasil masuk, diarahkan ke `/pos` |
+| 2 | Lihat navigasi | Menu Produk dan Kategori tampil |
+| 3 | Buka `/products` | Daftar produk tampil normal |
+| 4 | Klik Keluar | Kembali ke halaman `/login` |
+
+### Peran: Kasir (kasir@pos.test / password)
+
+| No | Langkah | Hasil yang diharapkan |
+|----|---------|-----------------------|
+| 1 | Buka `/login`, masuk sebagai kasir@pos.test | Berhasil masuk, diarahkan ke `/pos` |
+| 2 | Lihat navigasi | Menu Produk dan Kategori tidak tampil, tombol Keluar tetap ada |
+| 3 | Buka `/pos` | Halaman kasir tampil normal |
+| 4 | Buka `/products` lewat address bar | Halaman 403 "Anda tidak memiliki akses untuk halaman ini." |
+| 5 | Klik Keluar | Kembali ke halaman `/login` |
+
+### Tanpa login (tamu)
+
+| No | Langkah | Hasil yang diharapkan |
+|----|---------|-----------------------|
+| 1 | Buka `/products` | Diarahkan ke `/login` |
+| 2 | Login dengan kata sandi salah | Pesan "Email atau kata sandi salah." |
+| 3 | `curl -i http://127.0.0.1:8000/pos -H "Accept: application/json"` | Status 401, isi `{"message":"Unauthenticated."}` |
