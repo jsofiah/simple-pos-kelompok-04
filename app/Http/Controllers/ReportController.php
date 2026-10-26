@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\SalesReportExport;
 use App\Jobs\ProcessProductImport;
 use App\Models\Transaction;
+use App\Models\ImportError;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -14,6 +15,7 @@ use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+
 
 class ReportController extends Controller
 {
@@ -66,7 +68,13 @@ class ReportController extends Controller
     }
     public function importForm(): View
     {
-        return view('reports.import');
+        $importErrors = ImportError::latest()->take(10)->get();
+        return view('reports.import', compact('importErrors'));
+    }
+    public function clearErrors(): RedirectResponse
+    {
+        ImportError::truncate();
+        return back()->with('success', 'Log error berhasil dibersihkan.');
     }
     public function import(Request $request): RedirectResponse
     {
