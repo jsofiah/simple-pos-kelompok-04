@@ -16,6 +16,7 @@ use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\Imports\ProductsImport;
 
 
 class ReportController extends Controller
@@ -93,6 +94,18 @@ class ReportController extends Controller
         $path = $request->file('csv')->store('imports');
         ProcessProductImport::dispatch($path);
         return back()->with('success', 'Import sedang diproses di background.');
+    }
+
+        public function importExcel(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'csv' => ['required', 'file', 'mimes:csv,txt'],
+        ]);
+
+        $import = new ProductsImport;
+        Excel::import($import, $request->file('csv'));
+
+        return back()->with('success', "Import selesai, {$import->failures()->count()} row dilewati.");
     }
 
     private function resolveFilters(Request $request): array
