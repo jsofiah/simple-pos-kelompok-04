@@ -43,4 +43,23 @@
         </p>
         <button type="submit" class="bg-slate-900 text-white px-4 py-2 rounded-md text-sm">Import</button>
     </form>
+
+            <form method="POST" action="{{ route('import.excel.store') }}" enctype="multipart/form-data" class="max-w-md mt-8">
+        @csrf
+        <label class="block mb-3">
+            <span class="text-sm font-medium mb-1 block">File CSV (Versi Laravel Excel)</span>
+
+            <div class="border border-slate-300 rounded-md p-3 bg-white mt-1">
+                <input type="file" name="csv" accept=".csv" class="block w-full text-sm file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:text-sm file:bg-slate-100 file:text-slate-700">
+            </div>
+
+            @error('csv')
+                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+            @enderror
+        </label>
+        <p class="text-xs text-slate-500 mb-3">Column yang dibutuhkan: <code>name</code>,
+            <code>category_id</code>, <code>price</code>.
+        </p>
+        <button type="submit" class="bg-slate-900 text-white px-4 py-2 rounded-md text-sm">Import (Laravel Excel)</button>
+    </form>
 @endsection

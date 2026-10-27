@@ -93,3 +93,16 @@ Persiapan: jalankan `php artisan migrate:fresh --seed`, lalu `php artisan serve`
 | 1 | Buka `/products` | Diarahkan ke `/login` |
 | 2 | Login dengan kata sandi salah | Pesan "Email atau kata sandi salah." |
 | 3 | `curl -i http://127.0.0.1:8000/pos -H "Accept: application/json"` | Status 401, isi `{"message":"Unauthenticated."}` |
+
+
+## Perbandingan Import Produk: Manual vs Laravel Excel
+
+Kami membandingkan import manual (`ReportController` dan `ProcessProductImport`) dengan import memakai Laravel Excel (`ProductsImport` dengan `ToModel`, `WithHeadingRow`, dan `WithChunkReading`).
+
+Versi Laravel Excel lebih ringkas, karena pembacaan header, validasi per row, dan pembacaan per chunk cukup dideklarasikan lewat interface, tanpa `str_getcsv`, `array_combine`, dan pengecekan jumlah column secara manual. Library ini juga mencatat nomor row dan pesan error untuk row yang gagal validasi.
+
+Versi manual lebih mudah dikontrol dan dipahami alurnya. Kami bisa menghitung produk baru dan diperbarui lewat `wasRecentlyCreated`, tanpa dependency tambahan, dan sudah terhubung ke queue. Versi Laravel Excel yang kami buat berjalan langsung di request.
+
+Catatan: proyek kami memakai Laravel Excel v4, sehingga method `model()` perlu tipe kembalian `Model|array|null`. Ini contoh bahwa memakai library membawa konsekuensi versi.
+
+Kesimpulan: Laravel Excel lebih praktis untuk file besar dan format beragam, sedangkan versi manual cukup untuk kebutuhan sederhana yang butuh kontrol penuh.
