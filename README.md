@@ -106,3 +106,21 @@ Versi manual lebih mudah dikontrol dan dipahami alurnya. Kami bisa menghitung pr
 Catatan: proyek kami memakai Laravel Excel v4, sehingga method `model()` perlu tipe kembalian `Model|array|null`. Ini contoh bahwa memakai library membawa konsekuensi versi.
 
 Kesimpulan: Laravel Excel lebih praktis untuk file besar dan format beragam, sedangkan versi manual cukup untuk kebutuhan sederhana yang butuh kontrol penuh.
+
+## Fitur Ekspor Menggunakan Queued Jobs
+
+Proses ekspor laporan (PDF/Excel/CSV) dalam jumlah besar secara langsung (*synchronous*) memiliki beberapa keterbatasan utama pada aplikasi POS:
+
+* **Mencegah Timeout Server**: Pembuatan file PDF atau Excel untuk ribuan transaksi membutuhkan waktu eksekusi yang lama dan berisiko memicu error *Maximum Execution Time Exceeded*.
+* **Mengoptimalkan Penggunaan Memori**: Merender file PDF atau menyusun sheet Excel untuk data besar secara instan menguras memori server secara drastis (*Memory Limit Exceeded*).
+* **Meningkatkan Pengalaman Pengguna (UX)**: Pengguna tidak perlu menunggu halaman *loading* terlalu lama. Sistem memberikan respons langsung bahwa laporan sedang diproses.
+* **Mekanisme Ulang Otomatis**: Jika terjadi gangguan saat pembuatan file, *Queue Worker* dapat melakukan percobaan ulang (*retry*) secara otomatis tanpa mengganggu transaksi kasir yang sedang berjalan.
+
+---
+
+### Alur Kerja Ekspor Berbasis Queue (Asynchronous)
+
+1. **Request**: Pengguna menekan tombol ekspor laporan di sistem.
+2. **Dispatch**: Controller memicu *Job* ekspor ke dalam antrean (*queue*) dan langsung mengembalikan notifikasi bahwa laporan sedang diproses.
+3. **Background Process**: *Queue Worker* memproses penarikan data dan generasi file di *background*.
+4. **Notifikasi & Unduh**: Setelah file selesai dibuat dan disimpan ke *storage*, sistem memberikan notifikasi atau tautan unduh kepada pengguna.
