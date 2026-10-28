@@ -17,6 +17,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\Imports\ProductsImport;
+use App\Models\TransactionDetail;
+use Illuminate\Support\Facades\DB;
 
 
 class ReportController extends Controller
@@ -64,14 +66,26 @@ class ReportController extends Controller
     {
         [$from, $to, $categoryId] = $this->resolveFilters($request);
 
+        $transactionIds = $this->filteredQuery($from, $to, $categoryId)->pluck('id');
+
+        $topProducts = TransactionDetail::whereIn('transaction_id', $transactionIds)
+            ->select('product_id', DB::raw('SUM(qty) as total_qty'), DB::raw('SUM(subtotal) as total_penjualan'))
+            ->with('product')
+            ->groupBy('product_id')
+            ->orderByDesc('total_qty')
+            ->limit(10)
+            ->get();
+
         $pdf = Pdf::loadView('reports.pdf', [
             'totalPenjualan'  => $this->filteredQuery($from, $to, $categoryId)->sum('total'),
             'jumlahTransaksi' => $this->filteredQuery($from, $to, $categoryId)->count(),
             'transactions'    => $this->filteredQuery($from, $to, $categoryId)->latest()->limit(50)->get(),
+            'topProducts'     => $topProducts,
             'from'            => $from->toDateString(),
             'to'              => $to->toDateString(),
             'categoryName'    => $categoryId ? Category::find($categoryId)?->name : null,
         ]);
+
         return $pdf->download('laporan-penjualan.pdf');
     }
 
@@ -96,7 +110,7 @@ class ReportController extends Controller
         return back()->with('success', 'Import sedang diproses di background.');
     }
 
-        public function importExcel(Request $request): RedirectResponse
+    public function importExcel(Request $request): RedirectResponse
     {
         $request->validate([
             'csv' => ['required', 'file', 'mimes:csv,txt'],
