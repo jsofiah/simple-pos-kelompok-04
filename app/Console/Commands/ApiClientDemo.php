@@ -36,6 +36,20 @@ class ApiClientDemo extends Command
             || in_array($e->response->status(), [429, 502, 503, 504]);
         $backoff = fn (int $attempt) => $attempt * 1000;
 
+        $this->info('Mencoba login dengan password salah...');
+
+        $wrongLogin = Http::acceptJson()->post("{$baseUrl}/login", [
+            'email' => 'kasir@pos.test',
+            'password' => 'password-salah',
+        ]);
+
+        if ($wrongLogin->failed()) {
+            $this->warn('Login salah gagal seperti yang diharapkan: '.$wrongLogin->json('message'));
+        } else {
+            $this->error('Login dengan password salah malah berhasil — ada yang salah.');
+            return self::FAILURE;
+        }
+
         $login = Http::acceptJson()->post("{$baseUrl}/login", [
             'email' => 'kasir@pos.test',
             'password' => 'password',
