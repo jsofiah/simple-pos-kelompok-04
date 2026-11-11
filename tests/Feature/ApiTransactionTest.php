@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
+use Illuminate\Support\Carbon;
 
 class ApiTransactionTest extends TestCase
 {
@@ -72,5 +73,29 @@ class ApiTransactionTest extends TestCase
         $this->getJson("/api/v1/transactions/{$transaction->id}")
             ->assertOk()
             ->assertJsonPath('data.id', $transaction->id);
+    }
+    public function test_expired_token_cannot_create_transaction(): void
+    {
+        $user = User::factory()->create();
+
+        // Atur waktu saat token dibuat
+        Carbon::setTestNow(now());
+
+        $token = $user->createToken(
+            'test-token',
+            ['transactions:create'],
+            now()->addHour()
+        );
+
+        // Majukan waktu agar token kedaluwarsa
+        Carbon::setTestNow(now()->addHours(2));
+
+        $this->withToken($token->plainTextToken)
+            ->postJson('/api/v1/transactions', $this->payload())
+            ->assertUnauthorized();
+
+        // 401
+
+        Carbon::setTestNow();
     }
 }
