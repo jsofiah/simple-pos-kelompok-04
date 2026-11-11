@@ -2,6 +2,10 @@ openapi: 3.0.0
 info:
   title: Simple POS API
   version: 1.0.0
+  description: |
+    API untuk aplikasi kasir mobile Simple POS.
+    Endpoint produk mendukung paginasi, filter kategori, pencarian nama,
+    dan pengurutan lewat query string.
 
 paths:
   /api/login:
@@ -13,8 +17,8 @@ paths:
             schema:
               type: object
               properties:
-                email: { type: string }
-                password: { type: string }
+                email: { type: string, format: email }
+                password: { type: string, format: password }
       responses:
         '200':
           description: Token berhasil diterbitkan
@@ -35,12 +39,53 @@ paths:
 
   /api/products:
     get:
-      summary: Ambil daftar produk
+      summary: Ambil daftar produk (berpaginasi, bisa difilter dan diurutkan)
       security:
         - bearerAuth: []
+      parameters:
+        - name: per_page
+          in: query
+          description: Jumlah produk per halaman. Default 15, maksimum 100.
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 15
+          example: 5
+
+        - name: sort
+          in: query
+          description: |
+            Urutan hasil. Awalan tanda minus (-) berarti descending.
+            Nilai yang diizinkan hanya empat ini; nilai lain ditolak 422.
+          required: false
+          schema:
+            type: string
+            enum: [name, '-name', price, '-price']
+            default: name
+          example: '-price'
+
+        - name: category_id
+          in: query
+          description: Filter produk berdasarkan ID kategori (harus ada di tabel categories).
+          required: false
+          schema:
+            type: integer
+          example: 1
+
+        - name: q
+          in: query
+          description: Cari produk yang namanya mengandung teks ini (minimal 2 karakter).
+          required: false
+          schema:
+            type: string
+            minLength: 2
+          example: kopi
+
       responses:
         '200':
-          description: Daftar produk
+          description: Daftar produk berpaginasi
           content:
             application/json:
               schema:
@@ -55,8 +100,40 @@ paths:
                         name: { type: string }
                         price: { type: integer }
                         category: { type: string }
+                  links:
+                    type: object
+                    description: Tautan navigasi halaman (dari Laravel paginator)
+                    properties:
+                      first: { type: string, format: uri, nullable: true }
+                      last: { type: string, format: uri, nullable: true }
+                      prev: { type: string, format: uri, nullable: true }
+                      next: { type: string, format: uri, nullable: true }
+                  meta:
+                    type: object
+                    description: Metadata paginasi
+                    properties:
+                      current_page: { type: integer }
+                      from: { type: integer, nullable: true }
+                      last_page: { type: integer }
+                      path: { type: string, format: uri }
+                      per_page: { type: integer }
+                      to: { type: integer, nullable: true }
+                      total: { type: integer }
         '401':
           description: Token tidak ada atau tidak valid
+        '422':
+          description: Query parameter tidak valid (mis. per_page > 100, sort tidak dikenal)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+                  errors:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items: { type: string }
 
   /api/transactions:
     post:
@@ -68,14 +145,17 @@ paths:
           application/json:
             schema:
               type: object
+              required: [items]
               properties:
                 items:
                   type: array
+                  minItems: 1
                   items:
                     type: object
+                    required: [product_id, qty]
                     properties:
                       product_id: { type: integer }
-                      qty: { type: integer }
+                      qty: { type: integer, minimum: 1 }
       responses:
         '201':
           description: Transaksi berhasil disimpan
