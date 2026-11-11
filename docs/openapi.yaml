@@ -179,3 +179,20 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
+
+# ============================================================
+# Catatan Pengujian dengan Postman (Tantangan 7)
+# ============================================================
+# Pengujian ketiga endpoint (POST /api/login, GET /api/products,
+# POST /api/transactions) dilakukan menggunakan Postman.
+# Postman menyediakan antarmuka grafis untuk menyusun request,
+# menyimpan token secara otomatis, dan menampilkan response JSON
+# dengan rapi. Perbandingan dengan curl: curl lebih ringan dan
+# cepat untuk pengujian sekali jalan di terminal, tetapi menyimpan
+# token dan mengulang request harus dilakukan manual setiap kali.
+# Postman lebih nyaman untuk pengujian berulang dan kolaborasi tim
+# karena collection dan environment dapat dibagikan, meskipun
+# memerlukan instalasi aplikasi. Untuk pengujian otomatis di CI/CD,
+# curl (atau feature test) tetap lebih praktis karena tidak
+# bergantung pada aplikasi GUI.
+# ============================================================
